@@ -1,0 +1,10 @@
+com\visitorlogbook\controller\HostController.class
+com\visitorlogbook\model\User.class
+com\visitorlogbook\dao\UserRepository.class
+com\visitorlogbook\service\VisitorService.class
+com\visitorlogbook\dao\VisitorRepository.class
+com\visitorlogbook\Application.class
+com\visitorlogbook\service\UserService.class
+com\visitorlogbook\model\VisitorRequest.class
+com\visitorlogbook\controller\AuthController.class
+com\visitorlogbook\controller\VisitorController.class

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- JS -->
+    <script src="/js/app.js"></script>
+</head>
+
+<body class="fade-in" onload="showToast('Create your account 🚀')">
+
+<div id="toast" class="toast"></div>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <h2><i class="fa-solid fa-user-plus"></i> Register</h2>
+    <div>
+        <span class="toggle-btn" onclick="toggleDarkMode()">🌙</span>
+        <a href="/login"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+    </div>
+</div>
+
+<!-- FORM CARD -->
+<div class="container">
+
+    <form action="/register" method="post" onsubmit="showToast('Account Created Successfully!')">
+
+        <input name="name" placeholder="👤 Full Name" required>
+
+        <input name="email" placeholder="📧 Email" required>
+
+        <input name="password" type="password" placeholder="🔒 Password" required>
+
+        <select name="role">
+            <option value="VISITOR">👤 Visitor</option>
+            <option value="HOST">👨‍💼 Host</option>
+        </select>
+
+        <button>
+            <i class="fa-solid fa-user-check"></i> Register
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

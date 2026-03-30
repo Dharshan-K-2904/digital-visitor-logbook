@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Visitor Dashboard</title>
+<link rel="stylesheet" href="/css/style.css">
+<script src="/js/app.js"></script>
+</head>
+
+<body onload="showToast('Welcome Visitor!')">
+
+<div id="toast" class="toast"></div>
+
+<div class="navbar">
+<h2>Visitor Dashboard</h2>
+<div>
+<span class="toggle-btn" onclick="toggleDarkMode()">🌙</span>
+<a href="/logout">Logout</a>
+</div>
+</div>
+
+<div class="container">
+<h3>Send Request</h3>
+
+<form action="/request" method="post" onsubmit="showToast('Request Sent!')">
+<input name="hostEmail" placeholder="Host Email">
+<input name="purpose" placeholder="Purpose">
+<button>Submit</button>
+</form>
+
+</div>
+
+</body>
+</html>
