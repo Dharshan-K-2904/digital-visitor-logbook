@@ -1,0 +1,145 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    MEMBER 3 - QUICK REFERENCE CARD                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📋 YOUR RESPONSIBILITIES
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Major: Visitor Check-In and Check-Out Logging                                │
+│ Minor: Visitor Search and Filtering                                          │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+🎯 USE CASES IMPLEMENTED
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ UC-04: Visitor Check-In and Entry Verification                               │
+│   └─ Security personnel verify approval and log entry time                   │
+│                                                                               │
+│ UC-05: Visitor Check-Out and Duration Logging                                │
+│   └─ Security personnel log exit and calculate visit duration                │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+🔑 KEY FILES YOU CREATED/MODIFIED
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Backend:                                                                      │
+│   ✅ SecurityController.java          (NEW) - Main controller                │
+│   ✅ VisitorService.java              (MODIFIED) - Business logic            │
+│   ✅ VisitorRepository.java           (MODIFIED) - Data access               │
+│   ✅ VisitorRequest.java              (MODIFIED) - Model update              │
+│                                                                               │
+│ Frontend:                                                                     │
+│   ✅ security-dashboard.html          (NEW) - UI dashboard                   │
+│                                                                               │
+│ Database:                                                                     │
+│   ✅ schema.sql                       (MODIFIED) - Schema update             │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+🚀 HOW TO RUN YOUR PART
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 1. Start application:                                                        │
+│    mvn spring-boot:run                                                       │
+│                                                                               │
+│ 2. Navigate to:                                                              │
+│    http://localhost:8080/register                                            │
+│                                                                               │
+│ 3. Register as SECURITY role                                                 │
+│                                                                               │
+│ 4. Login and access:                                                         │
+│    http://localhost:8080/security                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+🧪 TESTING WORKFLOW
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 1. Create 3 accounts: VISITOR, HOST, SECURITY                                │
+│ 2. As VISITOR: Submit visit request                                          │
+│ 3. As HOST: Approve request                                                  │
+│ 4. As SECURITY: Check-in visitor (UC-04) ✅                                  │
+│ 5. As SECURITY: Check-out visitor (UC-05) ✅                                 │
+│ 6. Test search by name and host email                                        │
+│ 7. Test filter by status                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+📊 API ENDPOINTS YOU CREATED
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ GET  /security                   → Security dashboard                        │
+│ POST /security/check-in/{id}     → Check-in visitor (UC-04)                  │
+│ POST /security/check-out/{id}    → Check-out visitor (UC-05)                 │
+│ GET  /security/visitor/{id}      → View visitor details                      │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+🎨 DESIGN PATTERNS USED
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ✅ DAO Pattern                  (VisitorRepository)                          │
+│ ✅ MVC Pattern                   (Model-View-Controller)                     │
+│ ✅ Single Responsibility         (Each class = one purpose)                  │
+│ ✅ Dependency Inversion          (@Autowired injection)                      │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+💾 DATABASE CHANGES
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Added to visit_requests table:                                               │
+│   • visitor_name VARCHAR(100)       - For search functionality               │
+│   • check_in_time TIMESTAMP         - UC-04 entry time                       │
+│   • check_out_time TIMESTAMP        - UC-05 exit time                        │
+│   • visit_duration INT              - Duration in minutes                    │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+✨ KEY FEATURES
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ✅ Check-in with approval verification                                       │
+│ ✅ Check-out with duration calculation                                       │
+│ ✅ Search by visitor name (case-insensitive)                                 │
+│ ✅ Search by host email (case-insensitive)                                   │
+│ ✅ Filter by status (5 status types)                                         │
+│ ✅ Combined search + filter                                                  │
+│ ✅ Real-time statistics dashboard                                            │
+│ ✅ Prevents duplicate check-in/check-out                                     │
+│ ✅ Color-coded status badges                                                 │
+│ ✅ Responsive UI design                                                      │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+📚 DOCUMENTATION FILES
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 📄 MEMBER3_README.md          - Complete implementation details              │
+│ 📄 TESTING_GUIDE_MEMBER3.md   - Step-by-step testing guide                  │
+│ 📄 MEMBER3_SUMMARY.md         - Executive summary                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+🎯 STATUS CODES
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ PENDING      → Yellow badge → Waiting for host approval                      │
+│ APPROVED     → Green badge  → Ready for check-in                             │
+│ REJECTED     → Red badge    → Denied by host                                 │
+│ CHECKED_IN   → Blue badge   → Currently in premises                          │
+│ CHECKED_OUT  → Purple badge → Visit completed                                │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+⚠️ TROUBLESHOOTING
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Issue: Check-in button missing                                               │
+│ Fix: Ensure visit is APPROVED by host first                                  │
+│                                                                               │
+│ Issue: Duration shows NULL                                                   │
+│ Fix: Must check-in before check-out                                          │
+│                                                                               │
+│ Issue: Build fails                                                           │
+│ Fix: Run "mvn clean install" first                                           │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+✅ COMPLETION CHECKLIST
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ [✓] UC-04 Check-in implementation                                            │
+│ [✓] UC-05 Check-out implementation                                           │
+│ [✓] Search functionality                                                     │
+│ [✓] Filter functionality                                                     │
+│ [✓] Database schema updated                                                  │
+│ [✓] Controller created                                                       │
+│ [✓] UI dashboard created                                                     │
+│ [✓] Documentation complete                                                   │
+│ [ ] Manual testing (your task)                                               │
+│ [ ] Screenshots taken (your task)                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+🏆 PROJECT STATUS: ✅ COMPLETE AND READY FOR TESTING!
+
+═══════════════════════════════════════════════════════════════════════════════
+Good luck with your demonstration! 🎉
+═══════════════════════════════════════════════════════════════════════════════

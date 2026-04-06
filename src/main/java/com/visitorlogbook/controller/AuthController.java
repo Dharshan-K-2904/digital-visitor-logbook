@@ -60,6 +60,12 @@ public class AuthController {
 
         if (user.getRole().equals("HOST"))
             return "redirect:/host";
+        
+        if (user.getRole().equals("SECURITY"))
+            return "redirect:/security";
+        
+        if (user.getRole().equals("ADMIN"))
+            return "redirect:/admin";
 
         return "login";
     }

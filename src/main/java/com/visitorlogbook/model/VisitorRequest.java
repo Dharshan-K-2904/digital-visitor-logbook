@@ -17,10 +17,14 @@ public class VisitorRequest {
     private Long id;
 
     private Long visitorId;
+    private String visitorName;
     private String hostEmail;
     private String purpose;
     private String status;
     private LocalDateTime requestTime;
+    private LocalDateTime checkInTime;
+    private LocalDateTime checkOutTime;
+    private Integer visitDuration; // in minutes
 
     // ✅ GETTERS & SETTERS
 
@@ -70,5 +74,37 @@ public class VisitorRequest {
 
     public void setRequestTime(LocalDateTime requestTime) {
         this.requestTime = requestTime;
+    }
+
+    public String getVisitorName() {
+        return visitorName;
+    }
+
+    public void setVisitorName(String visitorName) {
+        this.visitorName = visitorName;
+    }
+
+    public LocalDateTime getCheckInTime() {
+        return checkInTime;
+    }
+
+    public void setCheckInTime(LocalDateTime checkInTime) {
+        this.checkInTime = checkInTime;
+    }
+
+    public LocalDateTime getCheckOutTime() {
+        return checkOutTime;
+    }
+
+    public void setCheckOutTime(LocalDateTime checkOutTime) {
+        this.checkOutTime = checkOutTime;
+    }
+
+    public Integer getVisitDuration() {
+        return visitDuration;
+    }
+
+    public void setVisitDuration(Integer visitDuration) {
+        this.visitDuration = visitDuration;
     }
 }

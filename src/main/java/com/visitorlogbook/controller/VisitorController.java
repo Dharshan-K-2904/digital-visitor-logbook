@@ -28,6 +28,7 @@ public class VisitorController {
         User user = (User) session.getAttribute("user");
 
         request.setVisitorId(user.getId()); // auto set visitor
+        request.setVisitorName(user.getName()); // set visitor name for searching
         service.createRequest(request);
 
         return "redirect:/visitor";
