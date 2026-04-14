@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Reports – Admin</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+<style>body{background:#f0f2f5;font-family:"Segoe UI",sans-serif;margin:0}
+.sidebar{position:fixed;top:0;left:0;height:100vh;width:235px;background:#1a237e;display:flex;flex-direction:column;z-index:100}
+.sidebar .brand{padding:22px 20px;font-size:1rem;font-weight:700;color:#fff;border-bottom:1px solid #283593;display:flex;align-items:center;gap:9px}
+.sidebar a{color:#c5cae9;text-decoration:none;padding:13px 20px;display:flex;align-items:center;gap:10px;font-size:.93rem;transition:background .15s}
+.sidebar a:hover,.sidebar a.active{background:#283593;color:#fff}
+.sidebar a i{font-size:1.1rem;width:20px}
+.sidebar .logout{margin-top:auto;border-top:1px solid #283593}
+.content{margin-left:235px;padding:34px}
+.card{border:none;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.08);background:#fff}
+.card-header{border-radius:14px 14px 0 0 !important;border-bottom:1px solid #f0f0f0}
+.table thead th{background:#e8eaf6;color:#1a237e;font-weight:600;font-size:.86rem;border-bottom:none;padding:12px 16px}
+.table tbody td{font-size:.86rem;vertical-align:middle;padding:11px 16px}
+.table-hover tbody tr:hover{background:#f8f9ff}
+.bs{display:inline-block;border-radius:20px;padding:3px 13px;font-size:.75rem;font-weight:700;letter-spacing:.2px}
+.s-PENDING{background:#fff3e0;color:#e65100}
+.s-APPROVED{background:#e8f5e9;color:#2e7d32}
+.s-REJECTED{background:#ffebee;color:#c62828}
+.s-CHECKED_IN{background:#e3f2fd;color:#1565c0}
+.s-CHECKED_OUT{background:#f3e5f5;color:#6a1b9a}
+.sc{border-radius:16px;padding:26px;color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.14)}
+.sn{font-size:2.6rem;font-weight:800;line-height:1}
+.sl{font-size:.83rem;opacity:.88;margin-top:7px}
+.c1{background:linear-gradient(135deg,#3949ab,#1a237e)}
+.c2{background:linear-gradient(135deg,#00897b,#004d40)}
+.c3{background:linear-gradient(135deg,#fb8c00,#bf360c)}
+.c4{background:linear-gradient(135deg,#8e24aa,#4a148c)}</style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="brand"><i class="bi bi-shield-lock-fill"></i> Admin Panel</div>
+  <a th:href="@{/admin/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+  <a th:href="@{/admin/reports}" class="active"><i class="bi bi-bar-chart-line"></i> Reports</a>
+  <a th:href="@{/admin/users}"><i class="bi bi-people-fill"></i> User Accounts</a>
+  <a th:href="@{/logout}" class="logout"><i class="bi bi-box-arrow-left"></i> Logout</a>
+</div>
+<div class="content">
+  <h4 class="fw-bold mb-1">Visitor Reports</h4>
+  <p class="text-muted mb-4">Filter and review all visit logs</p>
+
+  <!-- Filter -->
+  <div class="card mb-4">
+    <div class="card-body px-4 py-3">
+      <form th:action="@{/admin/reports/filter}" method="get" class="row g-3 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label fw-semibold small">From Date</label>
+          <input type="date" name="from" class="form-control" th:value="${from!=null?from.toString():''}"/>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold small">To Date</label>
+          <input type="date" name="to" class="form-control" th:value="${to!=null?to.toString():''}"/>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold small">Status</label>
+          <select name="status" class="form-select">
+            <option value="">All Statuses</option>
+            <option th:selected="${status=='PENDING'}"    value="PENDING">Pending</option>
+            <option th:selected="${status=='APPROVED'}"   value="APPROVED">Approved</option>
+            <option th:selected="${status=='REJECTED'}"   value="REJECTED">Rejected</option>
+            <option th:selected="${status=='CHECKED_IN'}" value="CHECKED_IN">Checked In</option>
+            <option th:selected="${status=='CHECKED_OUT'}"value="CHECKED_OUT">Checked Out</option>
+          </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+          <button type="submit" class="btn btn-primary flex-fill">
+            <i class="bi bi-funnel me-1"></i>Filter</button>
+          <a th:href="@{/admin/reports}" class="btn btn-outline-secondary flex-fill">Reset</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Results count + back link -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <span class="text-muted small">
+      Showing <strong th:text="${#lists.size(logs)}">0</strong> record(s)
+    </span>
+    <a th:href="@{/admin/dashboard}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Back to Dashboard</a>
+  </div>
+
+  <!-- Table -->
+  <div class="card">
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr><th>#</th><th>Visitor</th><th>Host</th><th>Purpose</th><th>Status</th>
+              <th>Check-In</th><th>Check-Out</th><th>Duration</th><th>Date</th></tr>
+        </thead>
+        <tbody>
+          <tr th:each="log : ${logs}">
+            <td th:text="${log.id}"></td>
+            <td th:text="${log.visitorName}"></td>
+            <td th:text="${log.hostName}"></td>
+            <td th:text="${log.purpose}"></td>
+            <td><span th:if="${log.status!=null}" th:class="${'bs s-'+log.status}" th:text="${log.status}"></span></td>
+            <td>
+              <span th:if="${log.checkIn!=null}" th:text="${#temporals.format(log.checkIn,'HH:mm dd/MM')}"></span>
+              <span th:unless="${log.checkIn!=null}" class="text-muted">—</span>
+            </td>
+            <td>
+              <span th:if="${log.checkOut!=null}" th:text="${#temporals.format(log.checkOut,'HH:mm dd/MM')}"></span>
+              <span th:unless="${log.checkOut!=null}" class="text-muted">—</span>
+            </td>
+            <td>
+              <span th:if="${log.durationMinutes!=null}" th:text="${log.durationMinutes+' min'}"></span>
+              <span th:unless="${log.durationMinutes!=null}" class="text-muted">—</span>
+            </td>
+            <td>
+              <span th:if="${log.createdAt!=null}" th:text="${#temporals.format(log.createdAt,'dd MMM yyyy')}"></span>
+              <span th:unless="${log.createdAt!=null}" class="text-muted">—</span>
+            </td>
+          </tr>
+          <tr th:if="${logs==null or #lists.isEmpty(logs)}">
+            <td colspan="9" class="text-center text-muted py-5">
+              <i class="bi bi-inbox fs-3 d-block mb-2 opacity-50"></i>No records found.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body></html>
