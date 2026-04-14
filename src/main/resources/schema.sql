@@ -1,0 +1,29 @@
+DROP TABLE IF EXISTS visit_requests;
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'VISITOR',
+    active TINYINT(1) NOT NULL DEFAULT 1,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE visit_requests (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    visitor_id BIGINT NOT NULL,
+    visitor_name VARCHAR(100) NOT NULL,
+    host_id BIGINT,
+    host_name VARCHAR(100) NOT NULL,
+    purpose VARCHAR(255) NOT NULL,
+    visit_date DATE NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    rejection_reason VARCHAR(255),
+    check_in DATETIME,
+    check_out DATETIME,
+    duration_minutes BIGINT,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (visitor_id) REFERENCES users(id) ON DELETE CASCADE
+);

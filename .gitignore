@@ -1,4 +1,47 @@
+<<<<<<< HEAD
 .vscode/
 target/
 *.class
 *.jar
+=======
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Compiled
+*.jar
+*.war
+*.ear
+*.class
+
+# IDE – IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# IDE – VS Code
+.vscode/
+*.code-workspace
+
+# IDE – Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Secrets (never commit real passwords)
+.env
+application-prod.properties
+>>>>>>> branch-4

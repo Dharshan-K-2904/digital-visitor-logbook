@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* BASE */
 body {
     font-family: 'Segoe UI', sans-serif;
@@ -115,3 +116,8 @@ td {
     border-radius: 6px;
     display: none;
 }
+=======
+body {
+    font-family: Arial, sans-serif;
+}
+>>>>>>> branch-4
