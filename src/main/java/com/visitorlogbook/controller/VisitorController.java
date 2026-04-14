@@ -1,41 +1,5 @@
 package com.visitorlogbook.controller;
 
-<<<<<<< HEAD
-import com.visitorlogbook.model.User;
-import com.visitorlogbook.model.VisitorRequest;
-import com.visitorlogbook.service.VisitorService;
-
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-@Controller
-public class VisitorController {
-
-    @Autowired
-    private VisitorService service;
-
-    // 🔹 Visitor Dashboard
-    @GetMapping("/visitor")
-    public String visitorPage() {
-        return "visitor-dashboard";
-    }
-
-    // 🔹 Send Request
-    @PostMapping("/request")
-    public String create(VisitorRequest request, HttpSession session) {
-
-        User user = (User) session.getAttribute("user");
-
-        request.setVisitorId(user.getId()); // auto set visitor
-        request.setVisitorName(user.getName()); // set visitor name for searching
-        service.createRequest(request);
-
-        return "redirect:/visitor";
-    }
-}
-=======
 import com.visitorlogbook.dao.UserDAO;
 import com.visitorlogbook.dao.VisitRequestDAO;
 import com.visitorlogbook.model.User;
@@ -102,4 +66,3 @@ public class VisitorController {
         return "redirect:/visitor/dashboard";
     }
 }
->>>>>>> branch-4
