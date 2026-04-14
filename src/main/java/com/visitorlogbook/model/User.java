@@ -1,6 +1,7 @@
 package com.visitorlogbook.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -14,8 +15,12 @@ public class User {
     private String email;
     private String password;
     private String role;
+    private boolean active;
+    private LocalDateTime createdAt;
 
     public User() {
+        this.active = true;
+        this.createdAt = LocalDateTime.now();
     }
 
     public User(String name, String email, String password, String role) {
@@ -23,6 +28,8 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = role;
+        this.active = true;
+        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -63,5 +70,21 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
