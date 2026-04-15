@@ -5,7 +5,6 @@ import com.visitorlogbook.dao.VisitRequestDAO;
 import com.visitorlogbook.model.User;
 import com.visitorlogbook.model.VisitRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,12 +12,24 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * VisitorController - Handles visitor visit request operations.
+ * Manages request submission and tracking.
+ */
 @Controller
 @RequestMapping("/visitor")
 public class VisitorController {
 
-    @Autowired private VisitRequestDAO visitDAO;
-    @Autowired private UserDAO userDAO;
+    private final VisitRequestDAO visitDAO;
+    private final UserDAO userDAO;
+
+    /**
+     * Constructor injection for DAOs.
+     */
+    public VisitorController(VisitRequestDAO visitDAO, UserDAO userDAO) {
+        this.visitDAO = visitDAO;
+        this.userDAO = userDAO;
+    }
 
     private User guard(HttpSession s) {
         User u = (User) s.getAttribute("user");

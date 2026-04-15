@@ -4,7 +4,6 @@ import com.visitorlogbook.dao.UserDAO;
 import com.visitorlogbook.dao.VisitRequestDAO;
 import com.visitorlogbook.model.User;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,12 +11,24 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 
+/**
+ * AdminController - Handles admin dashboard and user management.
+ * Manages user CRUD operations, reports, and system statistics.
+ */
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 
-    @Autowired private VisitRequestDAO visitDAO;
-    @Autowired private UserDAO userDAO;
+    private final VisitRequestDAO visitDAO;
+    private final UserDAO userDAO;
+
+    /**
+     * Constructor injection for DAOs.
+     */
+    public AdminController(VisitRequestDAO visitDAO, UserDAO userDAO) {
+        this.visitDAO = visitDAO;
+        this.userDAO = userDAO;
+    }
 
     private User guard(HttpSession s) {
         User u = (User) s.getAttribute("user");

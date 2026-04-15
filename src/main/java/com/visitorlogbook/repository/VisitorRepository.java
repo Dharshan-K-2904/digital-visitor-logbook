@@ -1,4 +1,4 @@
-package com.visitorlogbook.dao;
+package com.visitorlogbook.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;

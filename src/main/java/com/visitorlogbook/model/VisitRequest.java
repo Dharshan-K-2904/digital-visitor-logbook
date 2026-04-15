@@ -3,6 +3,12 @@ package com.visitorlogbook.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * VisitRequest DTO - Data Transfer Object for visit request information.
+ * 
+ * Used by DAO layer for JDBC-based database access.
+ * Statuses: PENDING, APPROVED, REJECTED, CHECKED_IN, CHECKED_OUT
+ */
 public class VisitRequest {
     private Long id;
     private Long visitorId;
@@ -11,13 +17,15 @@ public class VisitRequest {
     private String hostName;
     private String purpose;
     private LocalDate visitDate;
-    private String status;       // PENDING | APPROVED | REJECTED | CHECKED_IN | CHECKED_OUT
+    private String status;              // PENDING | APPROVED | REJECTED | CHECKED_IN | CHECKED_OUT
     private String rejectionReason;
     private LocalDateTime checkIn;
     private LocalDateTime checkOut;
     private Long durationMinutes;
     private LocalDateTime createdAt;
 
+    // ===== CONSTRUCTORS & ACCESSORS =====
+    
     public VisitRequest() {}
     public Long getId()                                   { return id; }
     public void setId(Long id)                            { this.id = id; }

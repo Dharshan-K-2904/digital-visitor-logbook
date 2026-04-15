@@ -1,4 +1,4 @@
-package com.visitorlogbook.dao;
+package com.visitorlogbook.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

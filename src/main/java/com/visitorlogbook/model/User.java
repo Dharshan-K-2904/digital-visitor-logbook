@@ -3,6 +3,15 @@ package com.visitorlogbook.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * User Entity - Represents a system user (Visitor, Host, Admin, Security).
+ * 
+ * Roles:
+ * - VISITOR: Can request visits
+ * - HOST: Can approve/reject visit requests
+ * - SECURITY: Can check in/out visitors
+ * - ADMIN: Can manage users and view reports
+ */
 @Entity
 @Table(name = "users")
 public class User {
@@ -11,18 +20,24 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private String email;
-    private String password;
-    private String role;
-    private boolean active;
-    private LocalDateTime createdAt;
+    private String name;        // User's full name
+    private String email;       // Unique email identifier
+    private String password;    // Password (plain text in this demo; hash in production)
+    private String role;        // User role: VISITOR, HOST, SECURITY, ADMIN
+    private boolean active;     // Account status
+    private LocalDateTime createdAt; // Account creation timestamp
 
+    /**
+     * Default constructor - initializes with default values.
+     */
     public User() {
         this.active = true;
         this.createdAt = LocalDateTime.now();
     }
 
+    /**
+     * Constructor with all parameters.
+     */
     public User(String name, String email, String password, String role) {
         this.name = name;
         this.email = email;

@@ -8,6 +8,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+/**
+ * VisitorRequest Entity - JPA entity for visit request persistence.
+ * 
+ * Statuses: PENDING, APPROVED, REJECTED, CHECKED_IN, CHECKED_OUT
+ * Used with Spring Data JPA Repository for database operations.
+ */
 @Entity
 @Table(name = "visit_requests")
 public class VisitorRequest {
@@ -16,17 +22,17 @@ public class VisitorRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long visitorId;
-    private String visitorName;
-    private String hostEmail;
-    private String purpose;
-    private String status;
-    private LocalDateTime requestTime;
-    private LocalDateTime checkInTime;
-    private LocalDateTime checkOutTime;
-    private Integer visitDuration; // in minutes
+    private Long visitorId;             // Visitor's user ID
+    private String visitorName;         // Visitor's name (cached for reports)
+    private String hostEmail;           // Host email
+    private String purpose;             // Purpose of visit
+    private String status;              // Request status
+    private LocalDateTime requestTime;  // When request was created
+    private LocalDateTime checkInTime;  // When visitor checked in
+    private LocalDateTime checkOutTime; // When visitor checked out
+    private Integer visitDuration;      // Duration in minutes
 
-    // ✅ GETTERS & SETTERS
+    // ===== GETTERS & SETTERS =====
 
     public Long getId() {
         return id;
