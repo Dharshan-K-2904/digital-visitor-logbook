@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>My Profile – Visitor Logbook</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body class="fade-in">
+
+<!-- Sidebar injected by each page via fragment or inline -->
+<div class="sidebar" th:if="${userRole == 'ADMIN'}">
+  <div class="brand"><i class="bi bi-shield-lock-fill"></i> Admin Panel</div>
+  <a th:href="@{/admin/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+  <a th:href="@{/admin/reports}"><i class="bi bi-bar-chart-line"></i> Reports</a>
+  <a th:href="@{/admin/users}"><i class="bi bi-people-fill"></i> User Accounts</a>
+  <div class="nav-section">Account</div>
+  <a th:href="@{/admin/profile}" class="active"><i class="bi bi-person-circle"></i> My Profile</a>
+  <div class="logout"><a th:href="@{/logout}"><i class="bi bi-box-arrow-left"></i> Logout</a></div>
+</div>
+
+<div class="sidebar" th:if="${userRole == 'HOST'}">
+  <div class="brand"><i class="bi bi-person-badge-fill"></i> Host Portal</div>
+  <a th:href="@{/host/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+  <div class="nav-section">Account</div>
+  <a th:href="@{/host/profile}" class="active"><i class="bi bi-person-circle"></i> My Profile</a>
+  <div class="logout"><a th:href="@{/logout}"><i class="bi bi-box-arrow-left"></i> Logout</a></div>
+</div>
+
+<div class="sidebar" th:if="${userRole == 'VISITOR'}">
+  <div class="brand"><i class="bi bi-person-circle"></i> Visitor Portal</div>
+  <a th:href="@{/visitor/dashboard}"><i class="bi bi-speedometer2"></i> My Requests</a>
+  <a th:href="@{/visitor/request/new}"><i class="bi bi-plus-circle"></i> New Request</a>
+  <div class="nav-section">Account</div>
+  <a th:href="@{/visitor/profile}" class="active"><i class="bi bi-person-circle"></i> My Profile</a>
+  <div class="logout"><a th:href="@{/logout}"><i class="bi bi-box-arrow-left"></i> Logout</a></div>
+</div>
+
+<div class="sidebar" th:if="${userRole == 'SECURITY'}">
+  <div class="brand"><i class="bi bi-shield-check"></i> Security Desk</div>
+  <a th:href="@{/security/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+  <div class="nav-section">Account</div>
+  <a th:href="@{/security/profile}" class="active"><i class="bi bi-person-circle"></i> My Profile</a>
+  <div class="logout"><a th:href="@{/logout}"><i class="bi bi-box-arrow-left"></i> Logout</a></div>
+</div>
+
+<div class="content">
+
+  <!-- Alerts -->
+  <div th:if="${success}" class="alert alert-success alert-dismissible fade show py-2 px-3 mb-4" style="border-radius:12px;font-size:.875rem">
+    <i class="bi bi-check-circle me-2"></i><span th:text="${success}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show py-2 px-3 mb-4" style="border-radius:12px;font-size:.875rem">
+    <i class="bi bi-exclamation-circle me-2"></i><span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+
+  <!-- Profile Hero Banner -->
+  <div class="profile-hero mb-4">
+    <div class="profile-avatar-large" th:attr="style='background:' + ${avatarColor}">
+      <span th:text="${user.name != null ? #strings.substring(user.name,0,1).toUpperCase() : '?'}">U</span>
+    </div>
+    <div class="profile-hero-info">
+      <h3 th:text="${user.name}">Full Name</h3>
+      <p th:text="${user.email}">email@example.com</p>
+      <div class="profile-role-tag">
+        <i th:class="${roleIcon}"></i>
+        <span th:text="${user.role}">ROLE</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats bar (role-specific) -->
+  <div class="profile-stats-bar mb-4">
+    <div class="profile-stat-item">
+      <div class="profile-stat-num" th:text="${statA != null ? statA : '—'}">—</div>
+      <div class="profile-stat-label" th:text="${statALabel != null ? statALabel : 'Stat A'}">Stat A</div>
+    </div>
+    <div class="profile-stat-item">
+      <div class="profile-stat-num" th:text="${statB != null ? statB : '—'}">—</div>
+      <div class="profile-stat-label" th:text="${statBLabel != null ? statBLabel : 'Stat B'}">Stat B</div>
+    </div>
+    <div class="profile-stat-item">
+      <div class="profile-stat-num" th:text="${statC != null ? statC : '—'}">—</div>
+      <div class="profile-stat-label" th:text="${statCLabel != null ? statCLabel : 'Stat C'}">Stat C</div>
+    </div>
+    <div class="profile-stat-item">
+      <div class="profile-stat-num">
+        <span th:if="${user.active}" class="text-success" style="font-size:1.4rem"><i class="bi bi-check-circle-fill"></i></span>
+        <span th:unless="${user.active}" class="text-danger" style="font-size:1.4rem"><i class="bi bi-x-circle-fill"></i></span>
+      </div>
+      <div class="profile-stat-label">Account Status</div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Edit Profile Form -->
+    <div class="col-lg-7">
+      <div class="profile-form-card">
+        <div class="profile-form-header">
+          <i class="bi bi-pencil-square text-primary"></i>
+          <h5>Edit Profile Information</h5>
+        </div>
+        <div class="profile-form-body">
+          <form th:action="${profileAction}" th:object="${profileForm}" method="post">
+            <div class="profile-field-group">
+              <div class="profile-field">
+                <label>Full Name</label>
+                <input type="text" class="form-control" th:field="*{name}"
+                       placeholder="Your full name" required
+                       style="border-radius:10px;padding:12px 14px"/>
+              </div>
+              <div class="profile-field">
+                <label>Email Address</label>
+                <input type="email" class="form-control" th:field="*{email}"
+                       placeholder="your@email.com" required
+                       style="border-radius:10px;padding:12px 14px"/>
+              </div>
+            </div>
+            <div class="profile-field mb-4">
+              <label>New Password <span class="text-muted fw-normal">(leave blank to keep current)</span></label>
+              <input type="password" class="form-control" name="newPassword"
+                     placeholder="••••••••"
+                     style="border-radius:10px;padding:12px 14px"/>
+            </div>
+            <div class="d-flex gap-3">
+              <button type="submit" class="btn btn-primary px-4 py-2" style="border-radius:10px;font-weight:600">
+                <i class="bi bi-check2-circle me-2"></i>Save Changes
+              </button>
+              <a th:href="${dashboardLink}" class="btn btn-outline-secondary px-4" style="border-radius:10px">
+                Cancel
+              </a>
+            </div>
+          </form>
+        </div>
+        <!-- Account metadata -->
+        <div class="profile-meta-row">
+          <div class="profile-meta-item">
+            <span class="profile-meta-label">User ID</span>
+            <span class="profile-meta-value" th:text="'#' + ${user.id}">#1</span>
+          </div>
+          <div class="profile-meta-item">
+            <span class="profile-meta-label">Role</span>
+            <span class="profile-meta-value" th:text="${user.role}">ROLE</span>
+          </div>
+          <div class="profile-meta-item">
+            <span class="profile-meta-label">Member Since</span>
+            <span class="profile-meta-value">
+              <span th:if="${user.createdAt != null}"
+                    th:text="${#temporals.format(user.createdAt,'dd MMM yyyy')}"></span>
+              <span th:unless="${user.createdAt != null}">—</span>
+            </span>
+          </div>
+          <div class="profile-meta-item">
+            <span class="profile-meta-label">Account Status</span>
+            <span class="profile-meta-value">
+              <span th:if="${user.active}" class="text-success fw-bold">Active</span>
+              <span th:unless="${user.active}" class="text-danger fw-bold">Inactive</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile sidebar info card -->
+    <div class="col-lg-5">
+      <div class="profile-form-card h-100">
+        <div class="profile-form-header">
+          <i class="bi bi-info-circle text-primary"></i>
+          <h5>Account Information</h5>
+        </div>
+        <div class="profile-form-body">
+          <!-- Role-based info -->
+          <div class="d-flex flex-column gap-3">
+            <div class="p-3 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i th:class="'bi ' + ${roleIcon} + ' text-primary'"></i>
+                <span class="fw-semibold" th:text="${user.role + ' Role'}">Role</span>
+              </div>
+              <p class="text-muted mb-0" style="font-size:.82rem" th:text="${roleDescription}">
+                Role description
+              </p>
+            </div>
+
+            <!-- Security tip -->
+            <div class="p-3 rounded-3" style="background:#fff7ed;border:1px solid #fed7aa">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-shield-lock text-warning"></i>
+                <span class="fw-semibold" style="color:#c2410c">Security Tips</span>
+              </div>
+              <ul class="mb-0 ps-3" style="font-size:.82rem;color:#92400e;line-height:1.8">
+                <li>Use a strong, unique password</li>
+                <li>Never share your login credentials</li>
+                <li>Log out after each session</li>
+              </ul>
+            </div>
+
+            <!-- Quick nav -->
+            <div class="p-3 rounded-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-lightning text-success"></i>
+                <span class="fw-semibold" style="color:#15803d">Quick Actions</span>
+              </div>
+              <div class="d-flex flex-column gap-2">
+                <a th:href="${dashboardLink}" class="btn btn-sm btn-outline-success" style="border-radius:8px;text-align:left">
+                  <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+                </a>
+                <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger" style="border-radius:8px;text-align:left">
+                  <i class="bi bi-box-arrow-left me-2"></i>Sign Out
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -5,80 +5,113 @@
 <title>My Requests – Visitor</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" th:href="@{/css/style.css}"/>
 <style>
-body{background:#f0f2f5;font-family:"Segoe UI",sans-serif;margin:0}
-.sidebar{position:fixed;top:0;left:0;height:100vh;width:235px;background:#004d40;display:flex;flex-direction:column;z-index:100}
-.sidebar .brand{padding:22px 20px;font-size:1rem;font-weight:700;color:#fff;border-bottom:1px solid #00695c;display:flex;align-items:center;gap:9px}
-.sidebar a{color:#b2dfdb;text-decoration:none;padding:13px 20px;display:flex;align-items:center;gap:10px;font-size:.93rem;transition:background .15s}
-.sidebar a:hover,.sidebar a.active{background:#00695c;color:#fff}
-.sidebar a i{width:20px}
-.sidebar .logout{margin-top:auto;border-top:1px solid #00695c}
-.content{margin-left:235px;padding:34px}
-.card{border:none;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.08);background:#fff}
-.table thead th{background:#e0f2f1;color:#004d40;font-weight:600;font-size:.86rem;border-bottom:none;padding:12px 16px}
-.table tbody td{font-size:.86rem;vertical-align:middle;padding:11px 16px}
-.bs{display:inline-block;border-radius:20px;padding:3px 13px;font-size:.75rem;font-weight:700}
-.s-PENDING{background:#fff3e0;color:#e65100}.s-APPROVED{background:#e8f5e9;color:#2e7d32}
-.s-REJECTED{background:#ffebee;color:#c62828}.s-CHECKED_IN{background:#e3f2fd;color:#1565c0}
-.s-CHECKED_OUT{background:#f3e5f5;color:#6a1b9a}
-.sc{border-radius:16px;padding:24px;color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.14)}
-.sn{font-size:2.4rem;font-weight:800;line-height:1}.sl{font-size:.83rem;opacity:.88;margin-top:7px}
-.ca{background:linear-gradient(135deg,#f59e0b,#d97706)}
-.cb{background:linear-gradient(135deg,#10b981,#059669)}
-.cc{background:linear-gradient(135deg,#ef4444,#dc2626)}
+  .sidebar{background:linear-gradient(180deg,#064e3b 0%,#022c22 100%) !important;}
+  .sidebar a:hover,.sidebar a.active{background:rgba(255,255,255,0.08) !important;border-left-color:#34d399 !important;}
+  .sidebar-avatar{background:linear-gradient(135deg,#059669,#047857) !important;}
 </style>
 </head>
 <body>
+
 <div class="sidebar">
   <div class="brand"><i class="bi bi-person-circle"></i> Visitor Portal</div>
+  <a th:href="@{/visitor/profile}" class="sidebar-user">
+    <div class="sidebar-avatar">
+      <span th:text="${user != null and user.name != null ? #strings.substring(user.name,0,1).toUpperCase() : 'V'}">V</span>
+    </div>
+    <div class="sidebar-user-info">
+      <div class="name" th:text="${user != null ? user.name : 'Visitor'}">Visitor</div>
+      <div class="role">Visitor</div>
+    </div>
+  </a>
   <a th:href="@{/visitor/dashboard}" class="active"><i class="bi bi-speedometer2"></i> My Requests</a>
   <a th:href="@{/visitor/request/new}"><i class="bi bi-plus-circle"></i> New Request</a>
-  <a th:href="@{/logout}" class="logout"><i class="bi bi-box-arrow-left"></i> Logout</a>
+  <div class="nav-section">Account</div>
+  <a th:href="@{/visitor/profile}"><i class="bi bi-person-circle"></i> My Profile</a>
+  <div class="logout"><a th:href="@{/logout}"><i class="bi bi-box-arrow-left"></i> Logout</a></div>
 </div>
-<div class="content">
-  <h4 class="fw-bold mb-1">My Visit Requests</h4>
-  <p class="text-muted mb-4">Welcome, <strong th:text="${user?.name}">Visitor</strong></p>
 
-  <div th:if="${success}" class="alert alert-success alert-dismissible fade show py-2 px-3 mb-3" style="border-radius:10px">
+<div class="content fade-in">
+  <div class="page-header">
+    <div>
+      <h4>My Visit Requests</h4>
+      <p>Welcome, <strong th:text="${user?.name}">Visitor</strong> 👋</p>
+    </div>
+    <a th:href="@{/visitor/request/new}" class="btn btn-primary" style="border-radius:10px;font-weight:600">
+      <i class="bi bi-plus me-1"></i>New Request
+    </a>
+  </div>
+
+  <div th:if="${success}" class="alert alert-success alert-dismissible fade show py-2 px-3 mb-3" style="border-radius:12px">
     <i class="bi bi-check-circle me-2"></i><span th:text="${success}"></span>
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
   </div>
 
+  <!-- Stats -->
   <div class="row g-3 mb-4">
-    <div class="col-md-4"><div class="sc ca">
-      <div class="sn" th:text="${pending}">0</div>
-      <div class="sl"><i class="bi bi-hourglass-split me-1"></i>Pending</div>
-    </div></div>
-    <div class="col-md-4"><div class="sc cb">
-      <div class="sn" th:text="${approved}">0</div>
-      <div class="sl"><i class="bi bi-check-circle me-1"></i>Approved</div>
-    </div></div>
-    <div class="col-md-4"><div class="sc cc">
-      <div class="sn" th:text="${rejected}">0</div>
-      <div class="sl"><i class="bi bi-x-circle me-1"></i>Rejected</div>
-    </div></div>
+    <div class="col-md-4">
+      <div class="sc ca">
+        <div class="sn" th:text="${pending}">0</div>
+        <div class="sl"><i class="bi bi-hourglass-split"></i> Pending</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="sc cb">
+        <div class="sn" th:text="${approved}">0</div>
+        <div class="sl"><i class="bi bi-check-circle"></i> Approved</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="sc cc">
+        <div class="sn" th:text="${rejected}">0</div>
+        <div class="sl"><i class="bi bi-x-circle"></i> Rejected</div>
+      </div>
+    </div>
   </div>
 
   <div class="card">
     <div class="card-header bg-white d-flex justify-content-between align-items-center py-3 px-4">
-      <span class="fw-semibold">All My Requests</span>
-      <a th:href="@{/visitor/request/new}" class="btn btn-sm btn-primary">
+      <span class="fw-semibold"><i class="bi bi-list-ul me-2 text-success"></i>All My Requests</span>
+      <a th:href="@{/visitor/request/new}" class="btn btn-sm btn-primary" style="border-radius:8px">
         <i class="bi bi-plus me-1"></i>New Request</a>
     </div>
     <div class="card-body p-0">
       <table class="table table-hover mb-0">
-        <thead><tr><th>#</th><th>Host</th><th>Purpose</th><th>Visit Date</th><th>Status</th><th>Rejection Reason</th></tr></thead>
+        <thead>
+          <tr><th>#</th><th>Host</th><th>Purpose</th><th>Visit Date</th><th>Status</th><th>Log</th><th>Actions</th></tr>
+        </thead>
         <tbody>
           <tr th:each="r : ${requests}">
-            <td th:text="${r.id}"></td>
-            <td th:text="${r.hostName}"></td>
+            <td class="text-muted" th:text="${r.id}"></td>
+            <td class="fw-semibold" th:text="${r.hostName}"></td>
             <td th:text="${r.purpose}"></td>
             <td><span th:if="${r.visitDate!=null}" th:text="${#temporals.format(r.visitDate,'dd MMM yyyy')}"></span></td>
             <td><span th:if="${r.status!=null}" th:class="${'bs s-'+r.status}" th:text="${r.status}"></span></td>
-            <td class="text-muted" th:text="${r.rejectionReason!=null?r.rejectionReason:'—'}"></td>
+            <td>
+              <div style="font-size: .75rem; color: #64748b;">
+                <div th:if="${r.checkIn != null}">In: <span th:text="${#temporals.format(r.checkIn,'HH:mm')}"></span></div>
+                <div th:if="${r.checkOut != null}">Out: <span th:text="${#temporals.format(r.checkOut,'HH:mm')}"></span></div>
+              </div>
+            </td>
+            <td>
+              <div class="d-flex gap-2">
+                <form th:if="${r.status == 'APPROVED' and r.checkIn == null}" 
+                      th:action="@{/visitor/check-in/{id}(id=${r.id})}" method="post">
+                  <button type="submit" class="btn btn-sm btn-success" style="font-size:.7rem;padding:3px 8px">Check In</button>
+                </form>
+                <form th:if="${r.status == 'CHECKED_IN' and r.checkOut == null}" 
+                      th:action="@{/visitor/check-out/{id}(id=${r.id})}" method="post">
+                  <button type="submit" class="btn btn-sm btn-primary" style="font-size:.7rem;padding:3px 8px">Check Out</button>
+                </form>
+                <span th:if="${r.status == 'CHECKED_OUT'}" class="text-success small"><i class="bi bi-check-all"></i> Done</span>
+                <span th:if="${r.status == 'PENDING'}" class="text-muted small">Wait...</span>
+              </div>
+            </td>
           </tr>
           <tr th:if="${#lists.isEmpty(requests)}">
-            <td colspan="6" class="text-center text-muted py-5">
+            <td colspan="7" class="text-center text-muted py-5">
               <i class="bi bi-inbox fs-3 d-block mb-2 opacity-50"></i>
               No requests yet. <a th:href="@{/visitor/request/new}">Submit one!</a>
             </td>
@@ -88,5 +121,6 @@ body{background:#f0f2f5;font-family:"Segoe UI",sans-serif;margin:0}
     </div>
   </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body></html>

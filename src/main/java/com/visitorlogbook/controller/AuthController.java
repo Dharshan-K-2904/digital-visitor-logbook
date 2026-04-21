@@ -1,7 +1,9 @@
 package com.visitorlogbook.controller;
 
-import com.visitorlogbook.dao.UserDAO;
+import com.visitorlogbook.factory.UserFactoryRegistry;
 import com.visitorlogbook.model.User;
+import com.visitorlogbook.model.UserRole;
+import com.visitorlogbook.service.UserManagementService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,102 +11,119 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
- * AuthController - Handles user authentication and registration.
- * Manages login, logout, registration, and role-based redirects.
+ * AuthController – Handles user authentication and self-registration.
+ *
+ * Design principles applied:
+ *  - SRP : only responsible for auth / session concerns.
+ *  - DIP : depends on {@link UserManagementService} interface, not any DAO impl.
+ *  - Factory Method : uses {@link UserFactoryRegistry} to select the correct
+ *                     concrete {@link com.visitorlogbook.factory.UserFactory}
+ *                     at runtime (GoF Factory Method Pattern).
  */
 @Controller
 public class AuthController {
 
-    private final UserDAO userDAO;
+    private final UserManagementService userService;
+    private final UserFactoryRegistry   factoryRegistry;
 
     /**
-     * Constructor injection for UserDAO.
+     * Constructor injection – both collaborators are injected as abstractions (DIP).
      */
-    public AuthController(UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public AuthController(UserManagementService userService,
+                          UserFactoryRegistry factoryRegistry) {
+        this.userService     = userService;
+        this.factoryRegistry = factoryRegistry;
     }
 
-    // Root redirects to login
+    // ── Root ──────────────────────────────────────────────────────────────────
+
     @GetMapping("/")
     public String root() {
         return "redirect:/login";
     }
 
-    // Login page
+    // ── Login ─────────────────────────────────────────────────────────────────
+
     @GetMapping("/login")
     public String loginPage(HttpSession session) {
         if (session.getAttribute("user") != null) {
-            return redirect((User) session.getAttribute("user"));
+            return dashboardFor((User) session.getAttribute("user"));
         }
         return "auth/login";
     }
 
-    // Login process
     @PostMapping("/login")
     public String login(@RequestParam String email,
                         @RequestParam String password,
                         HttpSession session,
                         RedirectAttributes ra) {
 
-        User user = userDAO.findByEmail(email.trim());
+        // Delegates auth concern to service layer (SRP, DIP).
+        User user = userService.authenticate(email, password);
 
-        if (user == null || !user.getPassword().equals(password)) {
-            ra.addFlashAttribute("error", "Invalid email or password.");
-            return "redirect:/login";
-        }
-
-        if (!user.isActive()) {
-            ra.addFlashAttribute("error", "Account is disabled. Contact admin.");
+        if (user == null) {
+            ra.addFlashAttribute("error", "Invalid credentials or account disabled.");
             return "redirect:/login";
         }
 
         session.setAttribute("user", user);
-        return redirect(user);
+        return dashboardFor(user);
     }
 
-    // Register page
+    // ── Registration ──────────────────────────────────────────────────────────
+
     @GetMapping("/register")
     public String registerPage(Model model) {
         model.addAttribute("user", new User());
-        return "register";
+        return "auth/register";
     }
 
-    // Register process
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user,
-                               RedirectAttributes ra) {
+    public String registerUser(@ModelAttribute User formUser, RedirectAttributes ra) {
+        // GoF Factory Method Pattern:
+        // UserFactoryRegistry selects VisitorUserFactory at runtime and delegates
+        // to its createUser() factory method via the getUser() template method.
+        User newUser;
+        try {
+            UserRole role = UserRole.fromString(formUser.getRole());
+            newUser = factoryRegistry.create(
+                    formUser.getName(),
+                    formUser.getEmail(),
+                    formUser.getPassword(),
+                    role
+            );
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("error", ex.getMessage());
+            return "redirect:/register";
+        }
 
-        if (userDAO.findByEmail(user.getEmail()) != null) {
+        // Service handles duplicate-email check (SRP, DIP).
+        User saved = userService.register(newUser);
+        if (saved == null) {
             ra.addFlashAttribute("error", "Email already registered.");
             return "redirect:/register";
         }
 
-        user.setActive(true);
-
-        if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("VISITOR");
-        }
-
-        userDAO.save(user);
-
-        ra.addFlashAttribute("success", "Registration successful. Please login.");
+        ra.addFlashAttribute("success", "Registration successful! Please log in.");
         return "redirect:/login";
     }
 
-    // Logout
+    // ── Logout ────────────────────────────────────────────────────────────────
+
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
     }
 
-    // Role-based redirect
-    private String redirect(User user) {
-        return switch (user.getRole()) {
-            case "ADMIN"    -> "redirect:/admin/dashboard";
-            case "HOST"     -> "redirect:/host/dashboard";
-            case "SECURITY" -> "redirect:/security/dashboard";
-            default         -> "redirect:/visitor/dashboard";
-        };
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    /**
+     * Role-based redirect after successful login.
+     * Uses {@link UserRole} enum so no raw String literals appear here (OCP).
+     */
+    private String dashboardFor(User user) {
+        UserRole role = UserRole.fromString(user.getRole());
+        return "redirect:" + role.getDefaultPath();
     }
 }

@@ -1,75 +1,94 @@
 package com.visitorlogbook.factory;
 
 import com.visitorlogbook.model.User;
-import org.springframework.stereotype.Component;
 
 /**
- * UserFactory - Factory Pattern Implementation
- * Centralizes user creation logic with consistent initialization.
- * Ensures all users are created with proper defaults and validation.
+ * UserFactory – Abstract Creator (GoF Factory Method Pattern).
+ *
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │                   GoF Factory Method Pattern                    │
+ * │                                                                 │
+ * │   Creator (abstract)        Product                             │
+ * │   ──────────────────        ───────                             │
+ * │   UserFactory               User                                │
+ * │     └── createUser()  ───►  new User(...)                       │
+ * │                                                                 │
+ * │   ConcreteCreator           (uses the product)                  │
+ * │   ──────────────────                                            │
+ * │   VisitorUserFactory   ──►  User(role=VISITOR)                  │
+ * │   HostUserFactory      ──►  User(role=HOST)                     │
+ * │   SecurityUserFactory  ──►  User(role=SECURITY)                 │
+ * │   AdminUserFactory     ──►  User(role=ADMIN)                    │
+ * └─────────────────────────────────────────────────────────────────┘
+ *
+ * This abstract class defines the <b>factory method</b> {@link #createUser}
+ * that every concrete subclass must implement.  It also provides a
+ * {@link #getUser} template method that performs shared pre/post steps
+ * (validation, active-flag defaulting) around the factory method call.
+ *
+ * Callers use {@link UserFactoryRegistry} to obtain the correct concrete
+ * factory for a given role at runtime — they never depend on a specific
+ * subclass.
+ *
+ * Design Pattern:
+ *  - Factory Method (GoF) : {@link #createUser} is the factory method.
+ *
+ * Design Principles:
+ *  - Open/Closed           : new roles → add a subclass; this class is closed.
+ *  - Single Responsibility : only responsible for the user-creation contract.
+ *  - Dependency Inversion  : clients depend on this abstraction, not {@code new User()}.
  */
-@Component
-public class UserFactory {
+public abstract class UserFactory {
+
+    // ── Factory Method (abstract) ─────────────────────────────────────────────
 
     /**
-     * Create a new User with full details.
+     * Factory Method – subclasses implement this to create role-specific Users.
+     *
+     * @param name     the user's full name
+     * @param email    the user's unique email address
+     * @param password the user's plain-text password (hash before storing in production)
+     * @return a new, fully initialised {@link User} for the concrete role
      */
-    public User createUser(String name, String email, String password, String role) {
-        validateInput(name, email, password, role);
-        return new User(name, email, password, role);
+    protected abstract User createUser(String name, String email, String password);
+
+    // ── Template Method (shared pre/post logic) ───────────────────────────────
+
+    /**
+     * Template Method – public entry point.
+     *
+     * Runs shared validation, calls the abstract {@link #createUser} factory
+     * method, then applies common post-construction defaults (active flag).
+     * Subclasses never need to duplicate this logic.
+     *
+     * @param name     the user's full name
+     * @param email    the user's unique email address
+     * @param password the user's plain-text password
+     * @return a validated, ready-to-persist {@link User}
+     * @throws IllegalArgumentException if any field fails validation
+     */
+    public final User getUser(String name, String email, String password) {
+        validate(name, email, password);          // shared pre-step
+        User user = createUser(name, email, password); // ← factory method call
+        user.setActive(true);                     // shared post-step
+        return user;
     }
 
-    /**
-     * Create a visitor user with default VISITOR role.
-     */
-    public User createVisitor(String name, String email, String password) {
-        return createUser(name, email, password, "VISITOR");
-    }
+    // ── Shared validation (used by all concrete creators) ────────────────────
 
     /**
-     * Create a host user with HOST role.
+     * Validate mandatory fields.
+     * Centralised here so every concrete factory benefits automatically.
      */
-    public User createHost(String name, String email, String password) {
-        return createUser(name, email, password, "HOST");
-    }
-
-    /**
-     * Create a security staff user with SECURITY role.
-     */
-    public User createSecurityStaff(String name, String email, String password) {
-        return createUser(name, email, password, "SECURITY");
-    }
-
-    /**
-     * Create an admin user with ADMIN role.
-     */
-    public User createAdmin(String name, String email, String password) {
-        return createUser(name, email, password, "ADMIN");
-    }
-
-    /**
-     * Validate user input parameters.
-     */
-    private void validateInput(String name, String email, String password, String role) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("User name cannot be empty");
+    private void validate(String name, String email, String password) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("User name cannot be blank.");
         }
-        if (email == null || email.trim().isEmpty()) {
-            throw new IllegalArgumentException("User email cannot be empty");
+        if (email == null || !email.contains("@")) {
+            throw new IllegalArgumentException("User email is invalid.");
         }
         if (password == null || password.length() < 4) {
-            throw new IllegalArgumentException("Password must be at least 4 characters");
+            throw new IllegalArgumentException("Password must be at least 4 characters.");
         }
-        if (role == null || (!isValidRole(role))) {
-            throw new IllegalArgumentException("Invalid user role");
-        }
-    }
-
-    /**
-     * Check if the role is valid.
-     */
-    private boolean isValidRole(String role) {
-        return role.equals("VISITOR") || role.equals("HOST") || 
-               role.equals("SECURITY") || role.equals("ADMIN");
     }
 }

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Visitor Detail – Security</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" th:href="@{/css/style.css}"/>
+<style>
+  .sidebar{background:linear-gradient(180deg,#1e1b4b 0%,#0d0b2e 100%) !important;}
+  .detail-card{background:#fff;border-radius:24px;box-shadow:0 10px 40px rgba(0,0,0,.08);overflow:hidden;border:none}
+  .detail-header{background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:40px;color:#fff;text-align:center}
+  .avatar-lg{width:100px;height:100px;background:rgba(255,255,255,0.2);border:4px solid rgba(255,255,255,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:2.5rem;font-weight:800}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;padding:40px}
+  .info-item{display:flex;flex-direction:column;gap:5px}
+  .info-label{font-size:.72rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px}
+  .info-value{font-size:1.05rem;font-weight:600;color:#1e293b}
+  .status-section{background:#f8fafc;padding:30px 40px;border-top:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="brand"><i class="bi bi-shield-check"></i> Security Desk</div>
+  <a th:href="@{/security/profile}" class="sidebar-user">
+    <div class="sidebar-avatar">
+      <span th:text="${#strings.substring(user.name,0,1).toUpperCase()}">S</span>
+    </div>
+    <div class="sidebar-user-info">
+      <div class="name" th:text="${user.name}">Security</div>
+      <div class="role">Security Personnel</div>
+    </div>
+  </a>
+  <a th:href="@{/security/dashboard}" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+  <div class="nav-section">Account</div>
+  <a th:href="@{/security/profile}"><i class="bi bi-person-circle"></i> My Profile</a>
+  <div class="logout"><a th:href="@{/logout}"><i class="bi bi-box-arrow-left"></i> Logout</a></div>
+</div>
+
+<div class="content fade-in">
+  <div class="page-header">
+    <div>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-2" style="font-size:.85rem">
+          <li class="breadcrumb-item"><a th:href="@{/security/dashboard}">Dashboard</a></li>
+          <li class="breadcrumb-item active">Visitor Details</li>
+        </ol>
+      </nav>
+      <h4>Visitor Pass Details</h4>
+    </div>
+    <a th:href="@{/security/dashboard}" class="btn btn-outline-secondary" style="border-radius:10px">
+      <i class="bi bi-arrow-left me-1"></i> Back to List
+    </a>
+  </div>
+
+  <div class="detail-card">
+    <div class="detail-header">
+      <div class="avatar-lg" th:text="${#strings.substring(req.visitorName,0,1).toUpperCase()}">J</div>
+      <h3 class="mb-1 fw-bold" th:text="${req.visitorName}">John Doe</h3>
+      <div class="badge bg-white text-primary px-3 py-2" style="border-radius:20px;font-size:.8rem">
+        ID: #<span th:text="${req.id}">1</span>
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">Host Employee</div>
+        <div class="info-value" th:text="${req.hostName}">Jane Smith</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Visit Purpose</div>
+        <div class="info-value" th:text="${req.purpose}">Business Meeting</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Scheduled Date</div>
+        <div class="info-value" th:text="${#temporals.format(req.visitDate, 'dd MMMM yyyy')}">20 April 2026</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Current Status</div>
+        <div class="info-value">
+          <span class="bs" th:classappend="${'s-' + req.status}" th:text="${req.status}">PENDING</span>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Check-In Time</div>
+        <div class="info-value" th:text="${req.checkIn != null ? #temporals.format(req.checkIn, 'hh:mm a') : '—'}">—</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Check-Out Time</div>
+        <div class="info-value" th:text="${req.checkOut != null ? #temporals.format(req.checkOut, 'hh:mm a') : '—'}">—</div>
+      </div>
+    </div>
+
+    <div class="status-section">
+      <div class="d-flex align-items-center gap-3">
+        <i class="bi bi-clock-history fs-3 text-muted"></i>
+        <div>
+          <div class="fw-bold text-dark">Visit Duration</div>
+          <div class="small text-muted" th:text="${req.durationMinutes != null ? req.durationMinutes + ' minutes recorded' : 'Active or pending session'}">—</div>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <form th:if="${req.status == 'APPROVED' and req.checkIn == null}" th:action="@{/security/check-in/{id}(id=${req.id})}" method="post">
+          <button type="submit" class="btn btn-success px-4" style="border-radius:10px">Check In</button>
+        </form>
+        <form th:if="${req.status == 'CHECKED_IN' and req.checkOut == null}" th:action="@{/security/check-out/{id}(id=${req.id})}" method="post">
+          <button type="submit" class="btn btn-primary px-4" style="border-radius:10px">Check Out</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body></html>

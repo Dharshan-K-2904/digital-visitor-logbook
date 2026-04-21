@@ -5,48 +5,45 @@
 <title>Dashboard – Admin</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
-<style>body{background:#f0f2f5;font-family:"Segoe UI",sans-serif;margin:0}
-.sidebar{position:fixed;top:0;left:0;height:100vh;width:235px;background:#1a237e;display:flex;flex-direction:column;z-index:100}
-.sidebar .brand{padding:22px 20px;font-size:1rem;font-weight:700;color:#fff;border-bottom:1px solid #283593;display:flex;align-items:center;gap:9px}
-.sidebar a{color:#c5cae9;text-decoration:none;padding:13px 20px;display:flex;align-items:center;gap:10px;font-size:.93rem;transition:background .15s}
-.sidebar a:hover,.sidebar a.active{background:#283593;color:#fff}
-.sidebar a i{font-size:1.1rem;width:20px}
-.sidebar .logout{margin-top:auto;border-top:1px solid #283593}
-.content{margin-left:235px;padding:34px}
-.card{border:none;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.08);background:#fff}
-.card-header{border-radius:14px 14px 0 0 !important;border-bottom:1px solid #f0f0f0}
-.table thead th{background:#e8eaf6;color:#1a237e;font-weight:600;font-size:.86rem;border-bottom:none;padding:12px 16px}
-.table tbody td{font-size:.86rem;vertical-align:middle;padding:11px 16px}
-.table-hover tbody tr:hover{background:#f8f9ff}
-.bs{display:inline-block;border-radius:20px;padding:3px 13px;font-size:.75rem;font-weight:700;letter-spacing:.2px}
-.s-PENDING{background:#fff3e0;color:#e65100}
-.s-APPROVED{background:#e8f5e9;color:#2e7d32}
-.s-REJECTED{background:#ffebee;color:#c62828}
-.s-CHECKED_IN{background:#e3f2fd;color:#1565c0}
-.s-CHECKED_OUT{background:#f3e5f5;color:#6a1b9a}
-.sc{border-radius:16px;padding:26px;color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.14)}
-.sn{font-size:2.6rem;font-weight:800;line-height:1}
-.sl{font-size:.83rem;opacity:.88;margin-top:7px}
-.c1{background:linear-gradient(135deg,#3949ab,#1a237e)}
-.c2{background:linear-gradient(135deg,#00897b,#004d40)}
-.c3{background:linear-gradient(135deg,#fb8c00,#bf360c)}
-.c4{background:linear-gradient(135deg,#8e24aa,#4a148c)}</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
+
+<!-- Sidebar -->
 <div class="sidebar">
   <div class="brand"><i class="bi bi-shield-lock-fill"></i> Admin Panel</div>
-  <a th:href="@{/admin/dashboard}" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
-  <a th:href="@{/admin/reports}"><i class="bi bi-bar-chart-line"></i> Reports</a>
-  <a th:href="@{/admin/users}"><i class="bi bi-people-fill"></i> User Accounts</a>
-  <a th:href="@{/logout}" class="logout"><i class="bi bi-box-arrow-left"></i> Logout</a>
-</div>
-<div class="content">
-  <div class="d-flex justify-content-between align-items-start mb-4">
-    <div>
-      <h4 class="fw-bold mb-1">Dashboard Overview</h4>
-      <p class="text-muted mb-0">Welcome back, <strong th:text="${user?.name}">Admin</strong></p>
+
+  <!-- Logged-in user quick profile -->
+  <a th:href="@{/admin/profile}" class="sidebar-user">
+    <div class="sidebar-avatar" style="background:linear-gradient(135deg,#4f46e5,#7c3aed)">
+      <span th:text="${user.name != null ? #strings.substring(user.name,0,1).toUpperCase() : 'A'}">A</span>
     </div>
-    <span class="badge bg-primary px-3 py-2" style="border-radius:10px;font-size:.82rem">
+    <div class="sidebar-user-info">
+      <div class="name" th:text="${user.name}">Admin</div>
+      <div class="role">Administrator</div>
+    </div>
+  </a>
+
+  <a th:href="@{/admin/dashboard}" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+  <a th:href="@{/admin/users}"><i class="bi bi-people"></i> User Management</a>
+  <a th:href="@{/admin/reports}"><i class="bi bi-file-earmark-bar-graph"></i> Visit Reports</a>
+  <div class="nav-section">System</div>
+  <a th:href="@{/admin/settings}"><i class="bi bi-gear"></i> System Settings</a>
+  <a th:href="@{/admin/profile}"><i class="bi bi-person-badge"></i> My Profile</a>
+  <div class="logout"><a th:href="@{/logout}"><i class="bi bi-box-arrow-left"></i> Logout</a></div>
+</div>
+
+<!-- Main Content -->
+<div class="content fade-in">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h4>Dashboard Overview</h4>
+      <p>Welcome back, <strong th:text="${user?.name}">Admin</strong> 👋</p>
+    </div>
+    <span class="badge px-3 py-2" style="border-radius:10px;font-size:.82rem;background:#4f46e5;color:#fff">
       <i class="bi bi-calendar3 me-1"></i>
       <span th:text="${#temporals.format(#temporals.createNow(),'dd MMM yyyy')}"></span>
     </span>
@@ -54,45 +51,59 @@
 
   <!-- Stat cards -->
   <div class="row g-3 mb-4">
-    <div class="col-md-3"><div class="sc c1">
-      <div class="sn" th:text="${totalVisitors}">0</div>
-      <div class="sl"><i class="bi bi-person-lines-fill me-1"></i>Total Visitors</div>
-    </div></div>
-    <div class="col-md-3"><div class="sc c2">
-      <div class="sn" th:text="${totalHosts}">0</div>
-      <div class="sl"><i class="bi bi-person-badge-fill me-1"></i>Total Hosts</div>
-    </div></div>
-    <div class="col-md-3"><div class="sc c3">
-      <div class="sn" th:text="${pendingRequests}">0</div>
-      <div class="sl"><i class="bi bi-hourglass-split me-1"></i>Pending Requests</div>
-    </div></div>
-    <div class="col-md-3"><div class="sc c4">
-      <div class="sn" th:text="${todayVisits}">0</div>
-      <div class="sl"><i class="bi bi-calendar-check-fill me-1"></i>Today's Visits</div>
-    </div></div>
+    <div class="col-md-3">
+      <div class="sc c1">
+        <div class="sn" th:text="${totalVisitors}">0</div>
+        <div class="sl"><i class="bi bi-person-lines-fill"></i> Total Visitors</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="sc c2">
+        <div class="sn" th:text="${totalHosts}">0</div>
+        <div class="sl"><i class="bi bi-person-badge-fill"></i> Total Hosts</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="sc c3">
+        <div class="sn" th:text="${pendingRequests}">0</div>
+        <div class="sl"><i class="bi bi-hourglass-split"></i> Pending Requests</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="sc c4">
+        <div class="sn" th:text="${todayVisits}">0</div>
+        <div class="sl"><i class="bi bi-calendar-check-fill"></i> Today's Visits</div>
+      </div>
+    </div>
   </div>
 
   <!-- Quick links -->
   <div class="row g-3 mb-4">
     <div class="col-md-4">
-      <a th:href="@{/admin/reports}" class="card text-decoration-none p-3 d-flex flex-row align-items-center gap-3" style="border-left:4px solid #1a237e !important">
-        <div style="width:44px;height:44px;background:#e8eaf6;border-radius:12px;display:flex;align-items:center;justify-content:center">
-          <i class="bi bi-bar-chart-line text-primary fs-5"></i></div>
-        <div><div class="fw-semibold text-dark">View Reports</div><div class="text-muted" style="font-size:.82rem">Filter &amp; search all logs</div></div>
+      <a th:href="@{/admin/reports}" class="quick-link" style="border-left:4px solid #4f46e5">
+        <div class="quick-link-icon" style="background:#ede9fe"><i class="bi bi-bar-chart-line" style="color:#4f46e5"></i></div>
+        <div>
+          <div class="quick-link-title">View Reports</div>
+          <div class="quick-link-desc">Filter &amp; search all logs</div>
+        </div>
       </a>
     </div>
     <div class="col-md-4">
-      <a th:href="@{/admin/users}" class="card text-decoration-none p-3 d-flex flex-row align-items-center gap-3" style="border-left:4px solid #00897b !important">
-        <div style="width:44px;height:44px;background:#e0f2f1;border-radius:12px;display:flex;align-items:center;justify-content:center">
-          <i class="bi bi-people-fill text-success fs-5"></i></div>
-        <div><div class="fw-semibold text-dark">Manage Users</div><div class="text-muted" style="font-size:.82rem">Add, edit or disable accounts</div></div>
+      <a th:href="@{/admin/users}" class="quick-link" style="border-left:4px solid #059669">
+        <div class="quick-link-icon" style="background:#d1fae5"><i class="bi bi-people-fill" style="color:#059669"></i></div>
+        <div>
+          <div class="quick-link-title">Manage Users</div>
+          <div class="quick-link-desc">Add, edit or disable accounts</div>
+        </div>
       </a>
     </div>
     <div class="col-md-4">
-      <a th:href="@{/admin/users/add}" class="card text-decoration-none p-3 d-flex flex-row align-items-center gap-3" style="border-left:4px solid #8e24aa !important">
-        <div style="width:44px;height:44px;background:#f3e5f5;border-radius:12px;display:flex;align-items:center;justify-content:center">
-          <i class="bi bi-person-plus-fill text-purple fs-5" style="color:#8e24aa"></i></div>
-        <div><div class="fw-semibold text-dark">Add New User</div><div class="text-muted" style="font-size:.82rem">Create visitor / host account</div></div>
+      <a th:href="@{/admin/users/add}" class="quick-link" style="border-left:4px solid #7c3aed">
+        <div class="quick-link-icon" style="background:#ede9fe"><i class="bi bi-person-plus-fill" style="color:#7c3aed"></i></div>
+        <div>
+          <div class="quick-link-title">Add New User</div>
+          <div class="quick-link-desc">Create visitor / host account</div>
+        </div>
       </a>
     </div>
   </div>
@@ -100,16 +111,20 @@
   <!-- Recent logs table -->
   <div class="card">
     <div class="card-header bg-white d-flex justify-content-between align-items-center py-3 px-4">
-      <span class="fw-semibold">Recent Visit Logs</span>
-      <a th:href="@{/admin/reports}" class="btn btn-sm btn-outline-primary">View All <i class="bi bi-arrow-right ms-1"></i></a>
+      <span class="fw-semibold"><i class="bi bi-clock-history me-2 text-primary"></i>Recent Visit Logs</span>
+      <a th:href="@{/admin/reports}" class="btn btn-sm btn-outline-primary" style="border-radius:8px">
+        View All <i class="bi bi-arrow-right ms-1"></i>
+      </a>
     </div>
     <div class="card-body p-0">
       <table class="table table-hover mb-0">
-        <thead><tr><th>#</th><th>Visitor</th><th>Host</th><th>Purpose</th><th>Status</th><th>Date</th></tr></thead>
+        <thead>
+          <tr><th>#</th><th>Visitor</th><th>Host</th><th>Purpose</th><th>Status</th><th>Date</th></tr>
+        </thead>
         <tbody>
           <tr th:each="log : ${recentLogs}">
-            <td th:text="${log.id}"></td>
-            <td th:text="${log.visitorName}"></td>
+            <td class="text-muted" th:text="${log.id}"></td>
+            <td class="fw-semibold" th:text="${log.visitorName}"></td>
             <td th:text="${log.hostName}"></td>
             <td th:text="${log.purpose}"></td>
             <td><span th:if="${log.status!=null}" th:class="${'bs s-'+log.status}" th:text="${log.status}"></span></td>
@@ -125,5 +140,6 @@
     </div>
   </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body></html>

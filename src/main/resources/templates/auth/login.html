@@ -5,51 +5,58 @@
 <title>Login – Visitor Logbook</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box}
 body{min-height:100vh;margin:0;display:flex;align-items:center;justify-content:center;
-     background:linear-gradient(135deg,#1a237e 0%,#283593 50%,#1565c0 100%);font-family:"Segoe UI",sans-serif}
-.card{border:none;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.35);padding:48px 40px;width:100%;max-width:430px}
-.icon{width:68px;height:68px;border-radius:18px;background:linear-gradient(135deg,#1a237e,#1565c0);
-      display:flex;align-items:center;justify-content:center;margin:0 auto 22px;color:#fff;font-size:2rem;
-      box-shadow:0 8px 24px rgba(26,35,126,.4)}
-h4{font-size:1.3rem}
-.form-control,.input-group-text{border:1.5px solid #e0e0e0}
-.form-control{border-radius:0 10px 10px 0;padding:12px 14px}
-.form-control:focus{border-color:#1a237e;box-shadow:0 0 0 3px rgba(26,35,126,.12);outline:none}
-.input-group-text{border-radius:10px 0 0 10px;border-right:none;background:#f8f9ff;min-width:44px;justify-content:center}
-.btn-login{background:linear-gradient(135deg,#1a237e,#1565c0);border:none;border-radius:10px;
-           padding:13px;font-weight:700;font-size:1rem;letter-spacing:.3px;transition:opacity .2s}
-.btn-login:hover{opacity:.88;color:#fff}
-.hint{background:#f8f9ff;border-radius:12px;padding:16px 18px;margin-top:22px;border:1px solid #e8eaf6}
-.hint-title{font-size:.75rem;font-weight:700;color:#9fa8da;letter-spacing:1px;margin-bottom:10px}
-.hint table{width:100%}.hint td{padding:3px 6px;font-size:.83rem}
-.lbl{color:#9e9e9e;width:70px}.val{font-weight:700;color:#1a237e;font-family:"Courier New",monospace}
+     background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#4c1d95 100%);
+     font-family:'Inter','Segoe UI',sans-serif}
+.card{border:none;border-radius:22px;box-shadow:0 24px 64px rgba(0,0,0,.4);padding:48px 40px;width:100%;max-width:450px;background:#fff}
+.icon{width:70px;height:70px;border-radius:20px;background:linear-gradient(135deg,#4f46e5,#7c3aed);
+      display:flex;align-items:center;justify-content:center;margin:0 auto 20px;color:#fff;font-size:2rem;
+      box-shadow:0 10px 28px rgba(79,70,229,.4)}
+.form-control{border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 14px;font-size:.9rem;font-family:inherit}
+.form-control:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.12);outline:none}
+.input-group-text{border:1.5px solid #e2e8f0;border-radius:10px 0 0 10px;border-right:none;background:#f8fafc;color:#64748b}
+.input-group .form-control{border-radius:0 10px 10px 0}
+.form-label{font-size:.82rem;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:.4px}
+.btn-login{background:linear-gradient(135deg,#4f46e5,#7c3aed);border:none;border-radius:12px;
+            padding:13px;font-weight:700;font-size:.95rem;letter-spacing:.3px;transition:opacity .2s,transform .15s;font-family:inherit}
+.btn-login:hover{opacity:.9;transform:translateY(-1px);color:#fff}
+.divider{text-align:center;position:relative;margin:24px 0}
+.divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:#e2e8f0}
+.divider span{background:#fff;padding:0 12px;position:relative;color:#94a3b8;font-size:.8rem}
+.hint{background:#f8fafc;border-radius:16px;padding:20px;margin-top:28px;border:1px solid #e2e8f0}
+.hint-title{font-size:.68rem;font-weight:800;color:#6366f1;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.hint table{width:100%}.hint td{padding:4px 0;font-size:.8rem}
+.lbl{color:#94a3b8;font-weight:500}.val{font-weight:600;color:#1e293b;text-align:right;font-family:monospace}
 </style>
 </head>
 <body>
 <div class="card">
   <div class="icon"><i class="bi bi-shield-lock-fill"></i></div>
   <h4 class="text-center fw-bold mb-1">Visitor Logbook</h4>
-  <p class="text-center text-muted mb-4" style="font-size:.88rem">Sign in to continue</p>
+  <p class="text-center text-muted mb-4" style="font-size:.88rem">Sign in to your account</p>
 
   <div th:if="${error}" class="alert alert-danger d-flex align-items-center py-2 mb-3" style="font-size:.88rem;border-radius:10px">
-    <i class="bi bi-exclamation-circle me-2"></i><span th:text="${error}"></span></div>
+    <i class="bi bi-exclamation-circle me-2"></i><span th:text="${error}"></span>
+  </div>
   <div th:if="${success}" class="alert alert-success d-flex align-items-center py-2 mb-3" style="font-size:.88rem;border-radius:10px">
-    <i class="bi bi-check-circle me-2"></i><span th:text="${success}"></span></div>
+    <i class="bi bi-check-circle me-2"></i><span th:text="${success}"></span>
+  </div>
 
   <form th:action="@{/login}" method="post">
     <div class="mb-3">
-      <label class="form-label fw-semibold small">Email Address</label>
+      <label class="form-label">Email Address</label>
       <div class="input-group">
-        <span class="input-group-text"><i class="bi bi-envelope text-muted"></i></span>
+        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
         <input type="email" name="email" class="form-control" placeholder="you@example.com" required autofocus/>
       </div>
     </div>
     <div class="mb-4">
-      <label class="form-label fw-semibold small">Password</label>
+      <label class="form-label">Password</label>
       <div class="input-group">
-        <span class="input-group-text"><i class="bi bi-lock text-muted"></i></span>
+        <span class="input-group-text"><i class="bi bi-lock"></i></span>
         <input type="password" name="password" class="form-control" placeholder="••••••••" required/>
       </div>
     </div>
@@ -58,13 +65,18 @@ h4{font-size:1.3rem}
     </button>
   </form>
 
+  <div class="divider"><span>Don't have an account?</span></div>
+  <a th:href="@{/register}" class="btn btn-outline-secondary w-100" style="border-radius:12px;font-weight:600">
+    <i class="bi bi-person-plus me-2"></i>Create Account
+  </a>
+
   <div class="hint">
-    <div class="hint-title">DEMO CREDENTIALS</div>
+    <div class="hint-title"><i class="bi bi-info-circle-fill"></i> Demo Credentials</div>
     <table>
-      <tr><td class="lbl">Admin</td>   <td class="val">admin@test.com / admin123</td></tr>
-      <tr><td class="lbl">Host</td>    <td class="val">host@test.com / host123</td></tr>
-      <tr><td class="lbl">Security</td><td class="val">security@test.com / security123</td></tr>
-      <tr><td class="lbl">Visitor</td> <td class="val">visitor@test.com / visitor123</td></tr>
+      <tr><td class="lbl">Administrator</td> <td class="val">admin@test.com / admin123</td></tr>
+      <tr><td class="lbl">Host Employee</td>  <td class="val">host@test.com / host123</td></tr>
+      <tr><td class="lbl">Security Guard</td> <td class="val">security@test.com / security123</td></tr>
+      <tr><td class="lbl">Bob Visitor</td>    <td class="val">visitor@test.com / visitor123</td></tr>
     </table>
   </div>
 </div>
